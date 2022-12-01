@@ -1,0 +1,91 @@
+<ROOT>
+<ET modelExpression="let modelData=intent.get(<model var>).get(<model path>)" onChange="modelData.set(<model path>, get<ModelAttr>)">
+</ET>
+<LL modelExpression="let modelData=intent.get(<model var>).get(<model path>) or let modelData=intent.get(<model var>)">
+	<ET modelExpression="set<ModelAttr>(modelData.get(<model path>))" onChange="modelData.set(<model path>, get<ModelAttr>)">
+	</ET>	
+</LL>
+</ROOT>
+
+<ROOT modelDataSourceKey="test" modelDataSource="intent" modelId="x">
+	<ET modelVar="x" modelPath="test">
+	</ET>
+	<LL modelVar="x" modelPath="test">
+		<ET modelVar="x" modelPath="test" modelAttribute="text" onChange="x.set<model attr>(modelPath, value)">
+		</ET>	
+	</LL>
+</ROOT>
+
+scopes:
+currentscreen
+session
+sharedprefence
+sqllite
+
+
+a-set
+--------------
+let x = y from intent into global;
+let y = x.u from global into  global;
+
+a-listener
+--------------
+
+
+
+list
+
+a-for
+--------------
+let z in y from global into loopvar
+
+a-add
+--------------
+let z = y from command into global;
+
+
+a-uisync
+------------
+text=z.abcd from global;
+
+a-modelsync
+------------
+z.abcd=text;
+
+a-modelsyncevent
+------------
+onChange
+
+getModel('global', 'a.text');
+setModel('global', 'ss');
+
+
+<ROOT modelVarExpression="let x = 'y' from intent into global;let z = 'select * from z' from sqllitedatabase into global; let m = x.u from global into global;">
+	<ET modelExpression="text = x.test;">
+	</ET>
+	<LL modelForExpression="let z in x.u; " modelVarExpression="let idPath='id';" modelAddExpression="let z=$commandData">
+		<ET modelVarExpression="let y = z into userdata" modelExpression="text<->z.abcd; textColor<->z.ooo; visibility=(z.pp==true)" modelSyncEvents="onChange" onClick="aa(y.id from userdata, x.aas from sss)">
+		</ET>	
+	</LL>
+</ROOT>
+
+
+<ROOT modelDataSourceKey="test" modelDataSource="intent" modelId="x"> 
+	<ET modelVar="x" modelPath="test" modelAttribute="text">
+	</ET>
+	<LL modelVar="x" modelPath="test" modeAttribute="modelDatas">
+		<ET modelVar="x" modelPath="text" modelAttribute="text" onChange="x.set<model attr>(modelPath, value)">
+		</ET>	
+	</LL>
+</ROOT>
+
+
+<ROOT modelDataSourceKey="test" modelDataSource="sqllite" modelId="test"> 
+	<ET modelVar="x" modelPath="test">
+	</ET>
+	<LL modelVar="x" modelPath="test" modelIteratorVar="z">
+		<ET modelVar="z" modelPath="test" modelAttribute="text" onChange="x.set<model attr>(modelPath, value)">
+		</ET>	
+	</LL>
+</ROOT>
+
