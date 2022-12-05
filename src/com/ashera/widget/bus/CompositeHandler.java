@@ -56,7 +56,9 @@ public class CompositeHandler extends EventBusHandler {
 	
 	@Override
 	protected void doPerform(Object payload) {
-		for (EventBusHandler handler : _handlers)
+		// copy it into a temp list
+		ArrayList<EventBusHandler> handlers = new ArrayList<>(_handlers);
+		for (EventBusHandler handler : handlers)
 			handler.perform(payload, this._accumulator);
 	}
 
