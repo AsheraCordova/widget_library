@@ -34,7 +34,9 @@ public class ModelStore {
             	
             	break;
             case loopvar:
-            	if (loopVarParams != null) {
+            	if (objValue == loopVarParams) {
+            		//do nothing
+            	} else if (loopVarParams != null) {
             		loopVarParams.put(varName, objValue);
             	} else {
             		throw new RuntimeException("loopvar scope not supported");

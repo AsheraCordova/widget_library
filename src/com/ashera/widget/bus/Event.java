@@ -2,7 +2,7 @@ package com.ashera.widget.bus;
 
 public class Event {
 	public enum StandardEvents {
-		orientationChange, customEvent, initialise, orientationChangePostParentMeasure, postMeasure, preMeasure, dealloc;
+		orientationChange, customEvent, initialise, orientationChangePostParentMeasure, postMeasure, preMeasure, dealloc, outsideClicked;
 	}
 	private StandardEvents type;
 	private Object additionalData;

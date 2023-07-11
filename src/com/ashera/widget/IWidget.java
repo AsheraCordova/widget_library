@@ -35,6 +35,7 @@ public interface IWidget extends IModel, HasLifeCycleDecorators, IWrapableWidget
 	Object asNativeWidget();	
 	String getLocalName();
 	String getGroupName();
+	Class getViewClass();
 	Object unwrap(Object widget);
 	
 	// life cycle methods
@@ -67,7 +68,8 @@ public interface IWidget extends IModel, HasLifeCycleDecorators, IWrapableWidget
 	/*
 	 * Method set Attribute on widget if convert method has already been called.. 
 	 */
-	void setAttribute(WidgetAttribute widgetAttribute, Object objValue, boolean skipConvert);
+	void setAttribute(String key, Object objValue, boolean skipConvert);
+	Object getAttribute(String key, boolean skipConvert);
 	
 	// TODO - this method should never be called from outside may be can hide this
 	void setAttribute(WidgetAttribute key, String strValue, Object objValue, ILifeCycleDecorator decorator);
@@ -130,4 +132,6 @@ public interface IWidget extends IModel, HasLifeCycleDecorators, IWrapableWidget
 	IWidget loadLazyWidgets(HasWidgets parent, int index, String idKey, LoopParam model);
 	IWidget loadLazyWidgets(LoopParam model);
     IWidget loadLazyWidgets(HasWidgets hasWidgets);
+    
+    Object invokeMethod(String methodName, Object... args);
 }

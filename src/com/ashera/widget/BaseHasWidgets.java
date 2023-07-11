@@ -22,8 +22,17 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
     protected List<IWidget> widgets = new ArrayList<IWidget>();
     protected List<IWidget> afterInitWidgets;
     protected IWidget listItem = null;
+    private String modelDescPath;
 
-    public BaseHasWidgets(String groupName, String localName) {
+    public String getModelDescPath() {
+		return modelDescPath;
+	}
+
+	public void setModelDescPath(String modelDescPath) {
+		this.modelDescPath = modelDescPath;
+	}
+
+	public BaseHasWidgets(String groupName, String localName) {
 		super(groupName, localName);
 	}
 
@@ -63,8 +72,8 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
 	}
 
 	public void setChildAttribute(IWidget w, WidgetAttribute widgetAttribute) {
-		IConverter converter = PluginInvoker.getConverter(widgetAttribute.getAttributeType());
 		String strValue = w.getAttributeValue(widgetAttribute.getAttributeName());
+		IConverter converter = PluginInvoker.getConverter(widgetAttribute.getAttributeType());
 
 		if (strValue != null) {
 			Object objValue = strValue;
@@ -72,6 +81,22 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
 				objValue = PluginInvoker.convertFrom(converter, getDependentAttributesMap(converter), strValue, fragment);
 			}
 			setChildAttribute(w, widgetAttribute, strValue, objValue);
+		}
+	}
+	
+	public void setChildAttribute(IWidget w, WidgetAttribute widgetAttribute, Object objValue, boolean skipConvert) {
+		if (objValue != null) {
+			String strValue = null;
+			if (!skipConvert) {
+				strValue = (String) objValue;
+				IConverter converter = PluginInvoker.getConverter(widgetAttribute.getAttributeType());
+				if (converter != null) {
+					objValue = PluginInvoker.convertFrom(converter, getDependentAttributesMap(converter), strValue, fragment);
+				}
+			}
+			setChildAttribute(w, widgetAttribute, strValue, objValue);
+			
+			requestLayoutNInvalidateIfRequired(widgetAttribute.getUpdateUiFlag() );
 		}
 	}
 
@@ -244,6 +269,10 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
 			return null;
 		}
 
+		@Override
+		public Class getViewClass() {
+			return BaseHasWidgets.this.getViewClass();
+		}
 	}
     
     // model related methods
@@ -376,7 +405,7 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
     
     
     @Override
-    public HasWidgets getCompositeLeaf() {
+    public HasWidgets getCompositeLeaf(IWidget w) {
         return this;
     }
     
@@ -406,7 +435,12 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
 	            if (obj != null) {
 		            for (Object model: PluginInvoker.getList(obj)) {
 		                model = changeModelDataType(dataType, model);
-		                LoopParam loopParam = new LoopParam();
+		                LoopParam loopParam = null;
+		                if (model instanceof LoopParam) {
+		                	loopParam = (LoopParam) model;
+		                } else {
+		                	loopParam = createLoopParam();
+		                }
 		                if (this.getLoopParam() != null) {
 		                	loopParam.putAll(this.getLoopParam());
 		                }
@@ -422,6 +456,22 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
 	    }
 
     }
+
+	public LoopParam createLoopParam() {
+		if (modelDescPath != null) {
+			return new LoopParam() {
+				@Override
+				public java.lang.String toString() {
+					ModelLoopHolder modelLoopHolder = ModelExpressionParser.parseModelLoopExpression(modelFor);
+					Object obj = getModelByPath(modelLoopHolder.varName, this);
+					obj = getModelByPath(modelDescPath, obj);
+					
+					return obj == null ? "" : obj.toString();
+				}
+			};
+		}
+		return new LoopParam();
+	}
     
     @Override
     public void addModel(Object model, int index) {
@@ -475,7 +525,7 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
             }
             model = changeModelDataType(dataType, model);
 
-            com.ashera.model.LoopParam loopParam = new com.ashera.model.LoopParam();
+            com.ashera.model.LoopParam loopParam = createLoopParam();
             storeModelToScope(varName, varScope, model, loopParam);
             addModel(loopParam, index, varName);        
         }

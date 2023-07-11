@@ -315,6 +315,11 @@ public class PluginInvoker {
 		plugin.invoke("runOnMainThread", runnable);
 	}
 
+	public static void enqueueTaskForEventLoop(Runnable runnable,long delay) {
+		IPlugin plugin = PluginManager.get("core");
+		plugin.invoke("enqueueTaskForEventLoop", runnable,delay);
+	}
+
 	//end - core
 	public static void registerFont(String fontFamily, String src,
 			String fontStyle, String fontWeight, Map<String, Object> metadata) {

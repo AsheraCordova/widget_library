@@ -22,6 +22,6 @@ public interface HasWidgets extends IWidget, IModelGroup {
     Object getChildAttribute(IWidget w, WidgetAttribute key);
 	void setChildAttribute(IWidget widget, WidgetAttribute key, String strValue, Object objValue);
 	
-    HasWidgets getCompositeLeaf();
+    HasWidgets getCompositeLeaf(IWidget w);
     boolean areWidgetItemsRecycled();
 }

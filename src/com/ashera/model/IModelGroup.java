@@ -13,4 +13,6 @@ public interface IModelGroup extends IModel {
     void addModel(Object model, int index);
     void removeModelAtIndex(int index);
     void removeModelById(String id);
+    String getModelDescPath();
+	void setModelDescPath(String modelDescPath);
 }

@@ -11,7 +11,12 @@ public class WidgetAttribute {
 	private int bufferStrategy;
 	private int updateUiFlag;
 	private boolean applyBeforeChildAdd;
+	private Integer stylePriority;
 	private int simpleWrapableViewStrategy = IWidget.APPLY_TO_VIEW_WRAPPER;
+
+	public Integer getStylePriority() {
+		return stylePriority;
+	}
 
 	private WidgetAttribute(Builder builder) {
 		this.attributeName = builder.attributeName;
@@ -25,6 +30,7 @@ public class WidgetAttribute {
 		this.arrayType = builder.arrayType;
 		this.arrayListToFinalType = builder.arrayListToFinalType;
 		this.simpleWrapableViewStrategy = builder.simpleWrapableViewStrategy;
+		this.stylePriority = builder.stylePriority;
 	}
 
 	public String getArrayListToFinalType() {
@@ -150,6 +156,7 @@ public class WidgetAttribute {
 		private boolean applyBeforeChildAdd;
 		private String arrayType;
 		private String arrayListToFinalType;
+		private Integer stylePriority;
 		public Builder() {
 		}
 
@@ -178,6 +185,10 @@ public class WidgetAttribute {
 			return this;
 		}
 
+		public Builder withStylePriority(Integer stylePriority) {
+			this.stylePriority = stylePriority;
+			return this;
+		}
 		public Builder forChild() {
 			this.isForChild = true;
 			return this;

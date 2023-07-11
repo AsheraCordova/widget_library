@@ -20,6 +20,9 @@ public class ExpressionMethodHandler {
 		switch (methodName) {
 		case "toString": {
 			val = com.ashera.widget.PluginInvoker.getString(obj);
+			if (val == null && obj != null) {
+				val = obj.toString();
+			}
 			break;
 		}
 		case "not": {

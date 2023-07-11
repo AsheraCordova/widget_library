@@ -89,6 +89,11 @@ public abstract class BaseWidget implements IWidget {
 		public String getGroupName() {
 			return BaseWidget.this.getGroupName();
 		}
+
+		@Override
+		public Class getViewClass() {
+			return BaseWidget.this.getViewClass();
+		}
 	}
 
 
@@ -416,9 +421,21 @@ public abstract class BaseWidget implements IWidget {
 		applyStyleToWidget(widgetAttribute, null, objValue, null);
 	}
 	
-	public void setAttribute(WidgetAttribute widgetAttribute, Object objValue, boolean skipConvert) {
+	@Override
+	public void setAttribute(String key, Object objValue, boolean skipConvert) {
+		if (key.startsWith("layout_")) {
+			WidgetAttribute widgetAttribute = WidgetFactory.getAttribute(getParent().getLocalName(), key);
+			((BaseHasWidgets) getParent()).setChildAttribute(this, widgetAttribute, objValue, skipConvert);
+		} else {
+			WidgetAttribute attribute = WidgetFactory.getAttribute(localName, key);
+			if (attribute != null) {
+				setAttribute(attribute, objValue, skipConvert);
+			}
+		}
+	}
+	
+	private void setAttribute(WidgetAttribute widgetAttribute, Object objValue, boolean skipConvert) {
 		applyStyleToWidget(widgetAttribute, null, objValue, null, skipConvert);
-		
 		requestLayoutNInvalidateIfRequired(widgetAttribute.getUpdateUiFlag() );
 	}
 	
@@ -950,9 +967,9 @@ public abstract class BaseWidget implements IWidget {
 							boolean isGetter = getBoolean(commandObj.get("getter"));
 							if (isGetter) { 
 								if (key.startsWith("layout_")) {
-									objValue = ((BaseWidget) getParent()).getAttributeValueFromWidget(widgetAttribute, this);
+									objValue = ((BaseWidget) getParent()).getAttributeValueFromWidget(widgetAttribute, this, false);
 								} else {
-									objValue = getAttributeValueFromWidget(widgetAttribute, null);
+									objValue = getAttributeValueFromWidget(widgetAttribute, null, false);
 								}
 								PluginInvoker.putJSONSafeObjectIntoMap(commandObj, "commandReturnValue", objValue);
 							}
@@ -964,6 +981,20 @@ public abstract class BaseWidget implements IWidget {
 		}	
 		
 		requestLayoutNInvalidateIfRequired(updateUiFlag);
+	}
+	
+	@Override
+	public Object getAttribute(String attributeName, boolean skipConvert) {
+		Object objValue = null;
+		if (attributeName.startsWith("layout_")) {
+			WidgetAttribute widgetAttribute = WidgetFactory.getAttribute(getParent().getLocalName(), attributeName);
+			objValue = ((BaseWidget) getParent()).getAttributeValueFromWidget(widgetAttribute, this, skipConvert);
+		} else {
+			WidgetAttribute widgetAttribute = WidgetFactory.getAttribute(localName, attributeName);
+			objValue = getAttributeValueFromWidget(widgetAttribute, null, skipConvert);
+		}
+		
+		return objValue;
 	}
 
 	public void requestLayoutNInvalidateIfRequired(int updateUiFlag) {
@@ -997,7 +1028,7 @@ public abstract class BaseWidget implements IWidget {
         return -1;
     }
 
-	private Object getAttributeValueFromWidget(WidgetAttribute widgetAttribute, IWidget childWidget) {
+	private Object getAttributeValueFromWidget(WidgetAttribute widgetAttribute, IWidget childWidget, boolean skipConvert) {
 		Object objValue;
         ILifeCycleDecorator lifeCycleDecorator = getDecorator(widgetAttribute);
 
@@ -1009,11 +1040,13 @@ public abstract class BaseWidget implements IWidget {
             objValue = getAttribute(widgetAttribute, getDecorator(widgetAttribute));
         }
 		
-		IConverter converter = PluginInvoker.getConverter(widgetAttribute.getAttributeType());
-		if (converter != null && objValue != null) {
-			objValue = PluginInvoker.convertTo(converter, objValue, fragment);
-			
-		}
+        if (!skipConvert) {
+			IConverter converter = PluginInvoker.getConverter(widgetAttribute.getAttributeType());
+			if (converter != null && objValue != null) {
+				objValue = PluginInvoker.convertTo(converter, objValue, fragment);
+				
+			}
+        }
 		return objValue;
 	}
 
@@ -1323,9 +1356,9 @@ public abstract class BaseWidget implements IWidget {
     		String key = widgetAttribute.getAttributeName();
     		Object objValue;
     		if (key.startsWith("layout_")) {
-    			objValue = ((BaseWidget) getParent()).getAttributeValueFromWidget(widgetAttribute, this);
+    			objValue = ((BaseWidget) getParent()).getAttributeValueFromWidget(widgetAttribute, this, false);
     		} else {
-    			objValue = getAttributeValueFromWidget(widgetAttribute, null);
+    			objValue = getAttributeValueFromWidget(widgetAttribute, null, false);
     		}
     
     		Object obj = getModelFromScope(varName, varScope);
@@ -1814,4 +1847,8 @@ public abstract class BaseWidget implements IWidget {
 		this.normalStyle = normalStyle;
 	}
 
+	@Override
+	public Object invokeMethod(String methodName, Object... args) {
+		return null;
+	}
 }

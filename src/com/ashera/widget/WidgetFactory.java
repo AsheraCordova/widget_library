@@ -11,6 +11,7 @@ import com.ashera.core.IFragment;
 
 public class WidgetFactory {	
 	private static Map<String, TreeMap<String, WidgetAttribute>> attributeMap = new HashMap<>();
+	private static Map<String, Set<WidgetAttribute>> styleAttributes = new HashMap<>();
 	private static Map<String, TreeMap<String, WidgetAttribute>> constructorAttributeMap = new HashMap<>();
 	private static Map<String, IWidget> registrationMap = new HashMap<String, IWidget>();
 	private static Map<String, IDecorator> decoratorMap = new HashMap<String, IDecorator>();
@@ -143,6 +144,9 @@ public class WidgetFactory {
 	}
 	
 	public static void registerAttribute(String localname, WidgetAttribute widgetAttribute) {
+		if (widgetAttribute.getStylePriority() != null) {
+			updateStyleAttrs(localname, widgetAttribute);
+		}
 		if (!attributeMap.containsKey(localname)) {
 			attributeMap.put(localname, new TreeMap<String, WidgetAttribute>());
 		}
@@ -150,6 +154,26 @@ public class WidgetFactory {
 		if (!attributeMap.get(localname).containsKey(attributeName)) {
 			attributeMap.get(localname).put(attributeName, widgetAttribute);
 		}
+	}
+
+	private static void updateStyleAttrs(String localname, WidgetAttribute widgetAttribute) {
+		if (!styleAttributes.containsKey(localname)) {
+			styleAttributes.put(localname, new java.util.TreeSet<WidgetAttribute>(new java.util.Comparator<WidgetAttribute>() {
+				@Override
+				public int compare(WidgetAttribute o1, WidgetAttribute o2) {
+					if (o1.getAttributeName().equals(o2.getAttributeName())) {
+						return 0;
+					}
+					
+					return o2.getStylePriority() - o1.getStylePriority();
+				}
+			}));
+		}
+		styleAttributes.get(localname).add(widgetAttribute);
+	}
+	
+	public static Set<WidgetAttribute> getStyleAttributes(String localname) {
+		return styleAttributes.get(localname);
 	}
 
 	public static WidgetAttribute getAttribute(String localname, String attributeName) {	
@@ -179,7 +203,7 @@ public class WidgetFactory {
 		behaviorMap.put(decorator, behavior);
 	}
 	
-	public static IBehavior getBehavior(String behavior) {
+	public static Object getBehavior(String behavior) {
 		IBehavior decorator = behaviorMap.get(behavior);
 		
 		if (decorator != null) {
