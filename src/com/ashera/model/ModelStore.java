@@ -80,7 +80,9 @@ public class ModelStore {
             	}
             	break;	
             case strings:
-            	return com.ashera.utils.ResourceBundleUtils.getString("values/strings", "string", "@string/" + varName, fragment);            	
+            	return com.ashera.utils.ResourceBundleUtils.getString("values/strings", "string", "@string/" + varName, fragment);
+            case constants:
+            	return varName;
 			default:
 				throw new RuntimeException("unsupported scope " + varScope);
 		}

@@ -335,7 +335,7 @@ public abstract class BaseWidget implements IWidget {
 		return id;
 	}
 	public int getIdAsInt() {
-		return IdGenerator.getId(id);
+		return (int) quickConvert(id, "id");
 	}
 	
 	@Override

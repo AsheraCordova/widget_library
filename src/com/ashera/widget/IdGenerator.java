@@ -13,6 +13,11 @@ public class IdGenerator {
 		return reverseMap.get(id);
 	}
 	
+	public static void setId(String name, int id) {
+		idMap.put(name, id);
+		reverseMap.put(id, name);
+	}
+	
 	/**
 	 * Generate a value suitable for use in {@link #setId(int)}.
 	 * This value will not collide with ID values generated at build time by aapt for R.id.
@@ -20,6 +25,9 @@ public class IdGenerator {
 	 * @return a generated ID value
 	 */
 	public static int getId(String id) {
+		if (id.startsWith("@id/")) {
+			id = "@+id/" + id.substring(4);
+		}
 		if (idMap.containsKey(id)) {
 			return idMap.get(id);
 		}
