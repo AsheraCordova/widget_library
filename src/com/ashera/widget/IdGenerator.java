@@ -25,7 +25,7 @@ public class IdGenerator {
 	 * @return a generated ID value
 	 */
 	public static int getId(String id) {
-		if (id.startsWith("@id/")) {
+		if (id != null && id.startsWith("@id/")) {
 			id = "@+id/" + id.substring(4);
 		}
 		if (idMap.containsKey(id)) {
