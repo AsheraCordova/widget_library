@@ -11,4 +11,5 @@ public interface ILifeCycleDecorator {
 	void initialized();
     Object getAttribute(WidgetAttribute widgetAttribute);
     void drawableStateChanged();
+    IWidget getWidget();
 }
