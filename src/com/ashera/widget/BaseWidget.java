@@ -123,6 +123,18 @@ public abstract class BaseWidget implements IWidget {
 	private int zIndex;
 	private Set<Integer> eventBubblers;
 	private String componentId;
+	private Object animator;
+	
+	@Override
+	public Object getAnimator() {
+		return animator;
+	}
+
+	@Override
+	public void setAnimator(Object animator) {
+		this.animator = animator;
+	}
+
 	@Override
 	public int getZIndex() {
 		return zIndex;
@@ -423,6 +435,9 @@ public abstract class BaseWidget implements IWidget {
 	
 	@Override
 	public void setAttribute(String key, Object objValue, boolean skipConvert) {
+		if (fragment.getRootWidget() == null) {
+			return;
+		}
 		if (key.startsWith("layout_")) {
 			WidgetAttribute widgetAttribute = WidgetFactory.getAttribute(getParent().getLocalName(), key);
 			((BaseHasWidgets) getParent()).setChildAttribute(this, widgetAttribute, objValue, skipConvert);
@@ -462,6 +477,7 @@ public abstract class BaseWidget implements IWidget {
 
 	private void applyStyleToWidgetWithoutBuffering(WidgetAttribute widgetAttribute, IWidget childWidget,
 			Object objValue, String phase, boolean skipConvert) {
+
 		try {
             String type = widgetAttribute.getAttributeType();
 			Object convertedValue = null;

@@ -134,4 +134,7 @@ public interface IWidget extends IModel, HasLifeCycleDecorators, IWrapableWidget
     IWidget loadLazyWidgets(HasWidgets hasWidgets);
     
     Object invokeMethod(String methodName, Object... args);
+    
+    Object getAnimator();
+	void setAnimator(Object animator);
 }
