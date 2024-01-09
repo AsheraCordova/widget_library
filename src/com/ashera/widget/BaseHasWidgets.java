@@ -21,6 +21,8 @@ import com.ashera.widget.WidgetViewHolder.AttributeViewHolder;
 public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
     protected List<IWidget> widgets = new ArrayList<IWidget>();
     protected List<IWidget> afterInitWidgets;
+    private List<Runnable> bufferedRunnables;
+
     protected IWidget listItem = null;
     private String modelDescPath;
 
@@ -650,5 +652,21 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
 
 	protected void invalidateChildIfRequired(IWidget childWidget) {
 		
+	}
+	protected void addToBufferedRunnables(Runnable run) {
+		if (bufferedRunnables == null) {
+    		bufferedRunnables = new java.util.ArrayList<>();
+    	}
+    	bufferedRunnables.add(run);
+	}
+
+	protected void runBufferedRunnables() {
+		if (bufferedRunnables != null) {
+			for (Iterator<Runnable> iterator = bufferedRunnables.iterator(); iterator.hasNext();) {
+				Runnable runnable = iterator.next();
+				runnable.run();
+				iterator.remove();
+			}
+		}
 	}
 }

@@ -17,7 +17,12 @@ public class CommandHelper {
         Object payLoad = PluginInvoker.unmarshal(strpayLoad, List.class);
         if (payLoad != null) {
 			 List<Object> commandDataArr = PluginInvoker.getList(payLoad);
-             w.executeCommand(w, commandDataArr, null, com.ashera.widget.IWidget.COMMAND_EXEC_SETTER_METHOD);
+			 try {
+				 fragment.disableRemeasure();
+	             w.executeCommand(w, commandDataArr, null, com.ashera.widget.IWidget.COMMAND_EXEC_SETTER_METHOD);
+			 } finally {
+				 fragment.enableRemeasure();
+			 }
              fragment.remeasure();
              w.executeCommand(w, commandDataArr, null, com.ashera.widget.IWidget.COMMAND_EXEC_GETTER_METHOD);
         }

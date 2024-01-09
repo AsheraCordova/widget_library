@@ -435,9 +435,10 @@ public abstract class BaseWidget implements IWidget {
 	
 	@Override
 	public void setAttribute(String key, Object objValue, boolean skipConvert) {
-		if (fragment.getRootWidget() == null) {
+		if (fragment.getRootWidget() == null || isWidgetDisposed()) {
 			return;
 		}
+		
 		if (key.startsWith("layout_")) {
 			WidgetAttribute widgetAttribute = WidgetFactory.getAttribute(getParent().getLocalName(), key);
 			((BaseHasWidgets) getParent()).setChildAttribute(this, widgetAttribute, objValue, skipConvert);
@@ -448,7 +449,7 @@ public abstract class BaseWidget implements IWidget {
 			}
 		}
 	}
-	
+
 	private void setAttribute(WidgetAttribute widgetAttribute, Object objValue, boolean skipConvert) {
 		applyStyleToWidget(widgetAttribute, null, objValue, null, skipConvert);
 		requestLayoutNInvalidateIfRequired(widgetAttribute.getUpdateUiFlag() );
@@ -1007,7 +1008,9 @@ public abstract class BaseWidget implements IWidget {
 			objValue = ((BaseWidget) getParent()).getAttributeValueFromWidget(widgetAttribute, this, skipConvert);
 		} else {
 			WidgetAttribute widgetAttribute = WidgetFactory.getAttribute(localName, attributeName);
-			objValue = getAttributeValueFromWidget(widgetAttribute, null, skipConvert);
+			if (widgetAttribute != null) {
+				objValue = getAttributeValueFromWidget(widgetAttribute, null, skipConvert);
+			}
 		}
 		
 		return objValue;
@@ -1866,5 +1869,9 @@ public abstract class BaseWidget implements IWidget {
 	@Override
 	public Object invokeMethod(String methodName, Object... args) {
 		return null;
+	}
+	
+	public boolean isWidgetDisposed() {
+		return false;
 	}
 }
