@@ -70,6 +70,10 @@ public class ExpressionMethodHandler {
 			val = multiply(widget, obj, configMap);
 			break;
 		}
+		case "sum": {
+			val = sum(widget, obj, configMap);
+			break;
+		}
 		case "total": {
 			val = total(widget, obj, configMap);
 			break;
@@ -128,6 +132,16 @@ public class ExpressionMethodHandler {
 			}
 		}
 		return val;
+	}
+
+	private static Object sum(IWidget widget, Object obj, Map<String, Object> configMap) {
+		String[] fields = ((String) configMap.get("fields")).split(",");
+		float sum = 0;
+		
+		for (String path : fields) {
+			sum += (com.ashera.widget.PluginInvoker.getFloat(widget.getModelByPath(path, obj)));
+		}
+		return sum;
 	}
 
 	private static Object ternary(IWidget widget, Object obj, Map<String, Object> configMap) {
