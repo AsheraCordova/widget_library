@@ -146,7 +146,12 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
             ids.remove(index);
             dataList.remove(index);
         }
-    }	
+    }
+    
+    protected void clearIdsAndData() {
+    	dataList.clear();
+    	ids.clear();
+    }
 	
 	@Override
 	public IWidget newLazyInstance() {
@@ -334,10 +339,14 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
             
             addItemToParent(index, id, childModel);
         } else {
-        	dataList.set(ids.indexOf(id), childModel);
-        	IWidget widget;
-        	widget = getChildWidgets().get(ids.indexOf(id));
-        	updateModelRecurse(widget, childModel);
+        	int idIndex = ids.indexOf(id);
+			dataList.set(idIndex, childModel);
+			
+			List<IWidget> childWidgets = getChildWidgets();
+			if (childWidgets.size() > idIndex) {
+	        	IWidget widget = childWidgets.get(idIndex);
+	        	updateModelRecurse(widget, childModel);
+			}
         }
         
     }
@@ -421,36 +430,7 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
     public void applyModelToWidget() {
         super.applyModelToWidget();
         try {
-	        if (modelFor != null) {
-	            ModelLoopHolder modelLoopHolder = ModelExpressionParser.parseModelLoopExpression(this.modelFor);
-	            
-	            //let x in . from y->intent into view as pathmap
-	            String varName = modelLoopHolder.varName;
-	            String varPath = modelLoopHolder.varPath;
-	            String key = modelLoopHolder.key;
-	            ModelScope varSource = modelLoopHolder.varSource;
-	            ModelScope varScope = modelLoopHolder.varScope;
-	            ModelDataType dataType = modelLoopHolder.dataType;
-	            Object obj = getModelFromScope(key, varSource);
-	            obj = getModelByPath(varPath, obj);
-	            
-	            if (obj != null) {
-		            for (Object model: PluginInvoker.getList(obj)) {
-		                model = changeModelDataType(dataType, model);
-		                LoopParam loopParam = null;
-		                if (model instanceof LoopParam) {
-		                	loopParam = (LoopParam) model;
-		                } else {
-		                	loopParam = createLoopParam();
-		                }
-		                if (this.getLoopParam() != null) {
-		                	loopParam.putAll(this.getLoopParam());
-		                }
-		                storeModelToScope(varName, varScope, model, loopParam);
-		                addModel(loopParam, varName);
-		            }
-	            }
-	        }
+	        applyModelFor();
 	    } catch (Exception e) {
 	    	System.out.println(e.getMessage());
 	    	e.printStackTrace();
@@ -458,6 +438,46 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
 	    }
 
     }
+    
+	protected void applyModelFor() {
+		if (modelFor != null) {
+		    ModelLoopHolder modelLoopHolder = ModelExpressionParser.parseModelLoopExpression(this.modelFor);
+		    
+		    //let x in . from y->intent into view as pathmap
+		    String varName = modelLoopHolder.varName;
+		    String varPath = modelLoopHolder.varPath;
+		    String key = modelLoopHolder.key;
+		    ModelScope varSource = modelLoopHolder.varSource;
+		    ModelScope varScope = modelLoopHolder.varScope;
+		    ModelDataType dataType = modelLoopHolder.dataType;
+		    Object obj = getModelFromScope(key, varSource);
+		    obj = getModelByPath(varPath, obj);
+		    
+		    if (obj != null) {
+		        for (Object model: PluginInvoker.getList(obj)) {
+		            model = changeModelDataType(dataType, model);
+		            
+		            if (filterData(model)) {
+			            LoopParam loopParam = null;
+			            if (model instanceof LoopParam) {
+			            	loopParam = (LoopParam) model;
+			            } else {
+			            	loopParam = createLoopParam();
+			            }
+			            if (this.getLoopParam() != null) {
+			            	loopParam.putAll(this.getLoopParam());
+			            }
+			            storeModelToScope(varName, varScope, model, loopParam);
+			            addModel(loopParam, varName);
+		            }
+		        }
+		    }
+		}
+	}
+
+	protected boolean filterData(Object model) {
+		return true;
+	}
 
 	public LoopParam createLoopParam() {
 		if (modelDescPath != null) {
@@ -477,7 +497,7 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
     
     @Override
     public void addModel(Object model, int index) {
-        addModelByIndex(model, index);
+    	addModelByIndex(model, index);
     }
 
     @Override
@@ -525,11 +545,14 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
 	                listObj.add(index, model);
 	            }
             }
-            model = changeModelDataType(dataType, model);
-
-            com.ashera.model.LoopParam loopParam = createLoopParam();
-            storeModelToScope(varName, varScope, model, loopParam);
-            addModel(loopParam, index, varName);        
+            
+            if(filterData(model)) {
+	            model = changeModelDataType(dataType, model);
+	
+	            com.ashera.model.LoopParam loopParam = createLoopParam();
+	            storeModelToScope(varName, varScope, model, loopParam);
+	            addModel(loopParam, index, varName);
+            }
         }
     }
 

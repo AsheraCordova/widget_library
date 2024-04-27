@@ -19,6 +19,8 @@ public class ModelExpressionParser {
             .compile("\\s*(\\w+)\\s*=\\s*(\\w*\\{)?([\\w\\.\\[\\]]+)\\}?\\s*from\\s*([\\w#]+)\\s*\\->(\\w+)\\s*");
     private static final Pattern MODEL_FROM_SCOPE_EXPRESSION = Pattern
             .compile("\\s*([\\w\\.\\[\\]]+)\\s*from\\s*([\\w#]+)\\s*\\->(\\w+)\\s*");
+    private static final Pattern MODEL_VAR_SCOPE_EXPRESSION = Pattern
+            .compile("\\s*([\\w#]+)\\s*\\->(\\w+)\\s*");
     private static final Pattern MODEL_UPDATE_TO_SCOPE_EXPRESSION = Pattern
             .compile("\\s*([\\w\\.\\[\\]]+)\\s*into\\s*([\\w#]+)\\s*\\->(\\w+)\\s*(as\\s*(\\w+)\\s*)?");
     private static final Pattern VAR_SET_STORE_REGEX = Pattern.compile("\\s*([\\w#]+)\\s*\\->(\\w+)\\s*as\\s*(\\w+)\\s*");
@@ -72,6 +74,22 @@ public class ModelExpressionParser {
         return new ModelFromScopeHolder(
                 evelRegEx(expression, MODEL_FROM_SCOPE_EXPRESSION, "Invalid expression. e.g. z from z->view"));
     }
+    
+    public static class ModelVarScopeHolder {
+        public String varName;
+        public ModelScope varScope;
+
+
+        public ModelVarScopeHolder(List<String> data) {
+            this.varName = data.get(0);
+            this.varScope = ModelScope.valueOf(data.get(1));
+        }
+    }
+    public static ModelVarScopeHolder parseModelVarScope(String expression) {
+        return new ModelVarScopeHolder(
+                evelRegEx(expression, MODEL_VAR_SCOPE_EXPRESSION, "Invalid expression. e.g. z from z->view"));
+    }
+    
 
     public static class ModelPojoToUiHolder {
         public String varPath;
