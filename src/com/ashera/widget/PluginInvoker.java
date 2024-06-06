@@ -167,6 +167,11 @@ public class PluginInvoker {
 		return (IWidget)plugin.invoke("parseFile", fileName,template,fragment);
 	}
 
+	public static IWidget parseFragment(String fileName,boolean template,IFragment fragment) {
+		IPlugin plugin = PluginManager.get("htmlparser");
+		return (IWidget)plugin.invoke("parseFragment", fileName,template,fragment);
+	}
+
 	public static void parseInclude(HasWidgets parent,String fileName,String componentId,boolean template,IFragment fragment) {
 		IPlugin plugin = PluginManager.get("htmlparser");
 		plugin.invoke("parseInclude", parent,fileName,componentId,template,fragment);

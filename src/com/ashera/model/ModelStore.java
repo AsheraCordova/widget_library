@@ -11,6 +11,13 @@ public class ModelStore {
         switch (varScope) {
             case view:
             	fragment.storeUserData(varName, objValue);
+            	break;
+            case parentview:
+            	IFragment currentFragment = widget.getFragment();
+            	while (currentFragment.getParent() != null) {
+            		currentFragment = currentFragment.getParent();
+				}
+            	currentFragment.storeUserData(varName, objValue);
             break;
         	case session:        		
         		fragment.getRootActivity().storeUserData(varName, objValue);
@@ -53,6 +60,14 @@ public class ModelStore {
 		    case view:
 		        obj = fragment.getUserData(varName);
 		        break;
+		    case parentview:
+            	IFragment currentFragment = widget.getFragment();
+            	while (currentFragment.getParent() != null) {
+            		currentFragment = currentFragment.getParent();
+				}
+            	
+            	obj = currentFragment.getUserData(varName);
+            	break;
 			case session:
 				obj = fragment.getRootActivity().getUserData(varName);
 				break;

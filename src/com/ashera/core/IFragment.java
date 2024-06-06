@@ -57,4 +57,6 @@ public interface IFragment {
 	
 	String getInlineResource(String key);
 	void setInlineResource(String key, String value, boolean append);
+	IFragment getParent();
+	String getUId();
 }
