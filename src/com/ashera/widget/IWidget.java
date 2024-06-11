@@ -96,6 +96,7 @@ public interface IWidget extends IModel, HasLifeCycleDecorators, IWrapableWidget
 	boolean isInitialised();
 	IWidget findNearestView(String id);
 	IFragment getFragment();
+	IFragment getRootFragment();
 	
 	//
 	void afterParentInit();

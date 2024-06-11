@@ -16,6 +16,7 @@ import java.util.Set;
 import com.ashera.converter.ConverterFactory;
 import com.ashera.converter.IConverter;
 import com.ashera.core.IFragment;
+import com.ashera.core.IFragmentContainer;
 import com.ashera.model.ExpressionMethodHandler;
 import com.ashera.model.IFlatMap;
 import com.ashera.model.LoopParam;
@@ -402,7 +403,9 @@ public abstract class BaseWidget implements IWidget {
 					Object objValue = getAttributeValue(widgetAttribute.getAttributeName());
 					
 					if (objValue != null) {
-						applyStyleToWidget(widgetAttribute, objValue);
+						if (isInitialised() || !widgetAttribute.isApplyBeforeChildAdd()) {
+							applyStyleToWidget(widgetAttribute, objValue);
+						}
 					}
 				}
 			}
@@ -517,6 +520,7 @@ public abstract class BaseWidget implements IWidget {
 	            if (lifeCycleDecorator != null) {
 	            	lifeCycleDecorator.setAttribute(widgetAttribute, strValue, convertedValue);
 	            }
+	            
 	            if (childWidget == null) {
 	            	setAttribute(widgetAttribute, strValue, convertedValue, lifeCycleDecorator);
 	            } else {
@@ -1873,5 +1877,19 @@ public abstract class BaseWidget implements IWidget {
 	
 	public boolean isWidgetDisposed() {
 		return false;
+	}
+	
+	@Override
+	public IFragment getRootFragment() {
+		HasWidgets parent = getFragment().getRootWidget().getParent();
+		IFragment myfragment =  getFragment();		
+		if (parent instanceof IFragmentContainer) {
+			while (parent instanceof IFragmentContainer) {
+				myfragment = parent.getFragment();
+				parent = myfragment.getRootWidget().getParent();
+			}
+		}
+		
+		return myfragment;
 	}
 }
