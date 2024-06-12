@@ -74,9 +74,9 @@ public class ModelStore {
 			case component:
 				if (widget.getComponentId() != null) {
 					if (varName.contains("#")) {
-						obj = fragment.getUserData(varName);
+						obj = widget.getRootFragment().getUserData(varName);
 					} else {
-						obj = fragment.getUserData(widget.getComponentId() + "#" + varName);
+						obj = widget.getRootFragment().getUserData(widget.getComponentId() + "#" + varName);
 					}
 				}
 				break;
