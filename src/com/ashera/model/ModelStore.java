@@ -31,10 +31,10 @@ public class ModelStore {
                 break;
             case component:
             	if (varName.contains("#")) {
-            		fragment.storeUserData(varName, objValue);
+            		widget.getRootFragment().storeUserData(varName, objValue);
             	} else {
 	            	if (widget.getComponentId() != null) {
-	            		fragment.storeUserData(widget.getComponentId() + "#" + varName, objValue);
+	            		widget.getRootFragment().storeUserData(widget.getComponentId() + "#" + varName, objValue);
 	            	}
             	}
             	
