@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
@@ -82,9 +83,13 @@ public class FileUtils {
     }
 
 	public static String readFileToString(File filePath) throws IOException {
-		StringBuilder fileData = new StringBuilder(1000);
-		BufferedReader reader = new BufferedReader(new java.io.FileReader(filePath));
- 
+		java.io.Reader input = new java.io.FileReader(filePath);
+		return readFileToString(input);	
+	}
+
+	private static String readFileToString(java.io.Reader input) throws IOException {
+		BufferedReader reader = new BufferedReader(input);
+		StringBuilder fileData = new StringBuilder(1000); 
 		char[] buf = new char[10];
 		int numRead = 0;
 		while ((numRead = reader.read(buf)) != -1) {
@@ -95,15 +100,22 @@ public class FileUtils {
  
 		reader.close();
  
-		return  fileData.toString();	
+		return  fileData.toString();
 	}
 	
 	public static java.util.Properties loadPropertiesFromClassPath(String fileName) {
 		java.util.Properties properties = new java.util.Properties();
+		java.io.StringReader stringReader = null;
 		try {
-			properties.load(getInputStreamFromClassPath(fileName));
+			String fileContent = readFileToString(new InputStreamReader(getInputStreamFromClassPath(fileName)));
+			stringReader = new java.io.StringReader(fileContent);
+			properties.load(stringReader);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		} finally {
+			if (stringReader != null) {
+				stringReader.close();
+			}
 		}
 		
 		return properties;
