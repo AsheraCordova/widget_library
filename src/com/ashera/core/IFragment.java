@@ -19,6 +19,7 @@ public interface IFragment {
 	void onPause();
 	void onCloseDialog();
 	Object onCreateView(boolean measure);
+	IFragment getRootFragment();
 	
 	EventBus getEventBus();
 	IWidget getRootWidget();
