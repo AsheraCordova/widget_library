@@ -241,8 +241,7 @@ public abstract class BaseWidget implements IWidget {
 			throw new RuntimeException("Call registerValueCommandExecutor for attribute " + sourceName + " in nativeCreate method ");
 		}
 		AttributeCommandChain attributeCommandChain = getAttributeCommandChain(sourceName);
-		Object value = attributeCommandChain.getOriginalStringValue();
-		applyStyleToWidget(WidgetFactory.getAttribute(getLocalName(), sourceName), null, value, phase);
+		applyStyleToWidget(sourceName, phase, attributeCommandChain);
 	}
 	
 	@Override
@@ -285,13 +284,24 @@ public abstract class BaseWidget implements IWidget {
 			if (!updateAttributes.containsKey(attributeName)) {
 				updateAttributes.put(attributeName, new ArrayList<>());
 			}
-			updateAttributes.get(attributeName).add(sourceName);
+			
+			if (!updateAttributes.get(attributeName).contains(sourceName)) {
+				updateAttributes.get(attributeName).add(sourceName);
+			}
 		}
-
 		if (isInitialised() && attributes.length > 0) {
-			Object value = attributeCommandChain.getOriginalStringValue();
-			applyStyleToWidget(WidgetFactory.getAttribute(getLocalName(), sourceName), value);
+			applyStyleToWidget(sourceName, null, attributeCommandChain);
 		}
+	}
+
+	private void applyStyleToWidget(String sourceName, String phase, AttributeCommandChain attributeCommandChain) {
+		Object value = attributeCommandChain.getOriginalStringValue();
+		boolean skipConvert = false;
+		if (value == null && attributeCommandChain.getOriginalValue() != null) {
+			value = attributeCommandChain.getOriginalValue();
+			skipConvert = true;
+		}
+		applyStyleToWidget(WidgetFactory.getAttribute(getLocalName(), sourceName), null, value, phase, skipConvert);
 	}
 
 	@Override
@@ -315,13 +325,17 @@ public abstract class BaseWidget implements IWidget {
 				}
 			}
 			
-			if (isInitialised() && attributes.length > 0) {
-				applyStyleToWidget(WidgetFactory.getAttribute(getLocalName(), sourceName), attributeCommandChain.getOriginalStringValue());
+			if (!disableRemoveAttributeCommandFromChain() && isInitialised() && attributes.length > 0) {
+				applyStyleToWidget(sourceName, null, attributeCommandChain);
 			}
 		}
 	}
 
-    @Override
+    public boolean disableRemoveAttributeCommandFromChain() {
+		return false;
+	}
+
+	@Override
 	public IFragment getFragment() {
 		return fragment;
 	}
@@ -534,8 +548,8 @@ public abstract class BaseWidget implements IWidget {
 	            		List<String> attributes = updateAttributes.get(attributeName);
 	            		if (attributes != null) {
 		            		for (String attribute : attributes) {
-			            		AttributeCommandChain commandExecutor = attributeCommandChainMap.get(attribute);
-								applyStyleToWidget(WidgetFactory.getAttribute(getLocalName(), attribute), commandExecutor.getOriginalStringValue());
+		            			AttributeCommandChain commandExecutor = attributeCommandChainMap.get(attribute);
+		            			applyStyleToWidget(attribute, null, commandExecutor);
 							}
 	            		}
 	            	}
