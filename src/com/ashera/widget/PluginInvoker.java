@@ -142,6 +142,11 @@ public class PluginInvoker {
 		return plugin.invoke("getJSONSafeObj", obj);
 	}
 
+	public static boolean isNull(Object obj) {
+		IPlugin plugin = PluginManager.get("jsonadapter");
+		return (boolean)plugin.invoke("isNull", obj);
+	}
+
 	//end - jsonadapter
 	
 	//start - navigator

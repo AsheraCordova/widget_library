@@ -95,6 +95,7 @@ public abstract class BaseWidget implements IWidget {
 		public Class getViewClass() {
 			return BaseWidget.this.getViewClass();
 		}
+
 	}
 
 
@@ -325,14 +326,10 @@ public abstract class BaseWidget implements IWidget {
 				}
 			}
 			
-			if (!disableRemoveAttributeCommandFromChain() && isInitialised() && attributes.length > 0) {
+			if (isInitialised() && attributes.length > 0) {
 				applyStyleToWidget(sourceName, null, attributeCommandChain);
 			}
 		}
-	}
-
-    public boolean disableRemoveAttributeCommandFromChain() {
-		return false;
 	}
 
 	@Override
@@ -430,9 +427,13 @@ public abstract class BaseWidget implements IWidget {
 	public Object quickConvert(Object objValue, String type) {
 		IConverter converter = PluginInvoker.getConverter(type);
 
+        if (objValue != null && PluginInvoker.isNull(objValue)) {
+        	objValue = null;
+        }
+        
         Object convertedValue = objValue;
 
-        if (converter != null) {
+        if (converter != null && objValue != null) {
             Map<String, Object> dependentAttributesMap = getDependentAttributesMap(converter);
         	convertedValue = PluginInvoker.convertFrom(converter, dependentAttributesMap, objValue, fragment);
         }
@@ -477,16 +478,18 @@ public abstract class BaseWidget implements IWidget {
 		applyStyleToWidget(widgetAttribute, childWidget, objValue, phase, false);
 	}
 	private void applyStyleToWidget(WidgetAttribute widgetAttribute, IWidget childWidget, Object objValue, String phase, boolean skipConvert) {
-		int bufferStrategy = widgetAttribute.getBufferStrategy();
-		if (bufferStrategy > 0 && ((bufferStrategy == BUFFER_STRATEGY_ALWAYS) || !(isInitialised() && bufferStrategy == BUFFER_STRATEGY_DURING_INIT))) {
-			if (bufferedAttributes == null) {
-				bufferedAttributes = new ArrayList<>();
+		if (widgetAttribute != null) {
+			int bufferStrategy = widgetAttribute.getBufferStrategy();
+			if (bufferStrategy > 0 && ((bufferStrategy == BUFFER_STRATEGY_ALWAYS) || !(isInitialised() && bufferStrategy == BUFFER_STRATEGY_DURING_INIT))) {
+				if (bufferedAttributes == null) {
+					bufferedAttributes = new ArrayList<>();
+				}
+				bufferedAttributes.add(new EventHolder(widgetAttribute, childWidget, objValue));
+				attributeBuffered();
+				return;
 			}
-			bufferedAttributes.add(new EventHolder(widgetAttribute, childWidget, objValue));
-			attributeBuffered();
-			return;
+			applyStyleToWidgetWithoutBuffering(widgetAttribute, childWidget, objValue, phase, skipConvert);
 		}
-		applyStyleToWidgetWithoutBuffering(widgetAttribute, childWidget, objValue, phase, skipConvert);
 	}
 
 	protected void attributeBuffered() {
@@ -495,10 +498,13 @@ public abstract class BaseWidget implements IWidget {
 
 	private void applyStyleToWidgetWithoutBuffering(WidgetAttribute widgetAttribute, IWidget childWidget,
 			Object objValue, String phase, boolean skipConvert) {
-
 		try {
             String type = widgetAttribute.getAttributeType();
 			Object convertedValue = null;
+			
+			if (objValue != null && PluginInvoker.isNull(objValue)) {
+				objValue = null;
+			}
 			
 			if (!skipConvert) {
 				convertedValue = quickConvert(objValue, type);
@@ -562,7 +568,6 @@ public abstract class BaseWidget implements IWidget {
         	fragment.addError(new com.ashera.model.Error(widgetAttribute, this, e));
         }
 	}
-
 
 	private Object handleArrayType(WidgetAttribute widgetAttribute, String type, Object convertedValue) {
 		if ("array".equals(type)) {
@@ -1784,38 +1789,42 @@ public abstract class BaseWidget implements IWidget {
 	@Override
     public IWidget loadLazyWidgets(HasWidgets parent, int index, String idKey, LoopParam model) {
         Object handler = PluginInvoker.getHandler(parent, index, fragment);
-        return loadWidget(this, handler, idKey, model, index);
+        return loadWidget(this, parent, handler, idKey, model, index);
     }
 
 	
 	@Override
     public IWidget loadLazyWidgets(HasWidgets parent) {
         Object handler = PluginInvoker.getHandler(parent, -1, fragment);
-        return loadWidget(this, handler, "", null, -1);
+        return loadWidget(this, parent, handler, "", null, -1);
     }
 	
 	@Override
     public IWidget loadLazyWidgets(LoopParam model) {
         Object handler = PluginInvoker.getHandler(parent, -1, fragment);
-        return loadWidget(this, handler, "", model, -1);
+        return loadWidget(this, parent, handler, "", model, -1);
     }
     
-    private void loadAndAddWidgets(Iterator<IWidget> iterator, Object handler, String idKey, LoopParam model) {
+    private void loadAndAddWidgets(Iterator<IWidget> iterator, IWidget root, Object handler, String idKey, LoopParam model) {
         while (iterator.hasNext()) {
             IWidget objWidget = (IWidget) iterator.next();
-            loadWidget(objWidget, handler, idKey, model, -1);
+            loadWidget(objWidget, root, handler, idKey, model, -1);
         }
     }
 
-    private IWidget loadWidget(IWidget objWidget, Object handler, String idKey, LoopParam model, int index) {
+    private IWidget loadWidget(IWidget objWidget, IWidget root, Object handler, String idKey, LoopParam model, int index) {
         IWidget widgetCreated = null;
         if (objWidget instanceof com.ashera.widget.BaseHasWidgets.LazyBaseWidget) {
             com.ashera.widget.BaseHasWidgets.LazyBaseWidget widget = (com.ashera.widget.BaseHasWidgets.LazyBaseWidget) objWidget;
-            widgetCreated = PluginInvoker.handlerStart(handler, widget, index);
-            widgetCreated.setLoopParam(model);
-
-            loadAndAddWidgets(((HasWidgets) widget).iterator(), handler, idKey, model);
-            PluginInvoker.handlerEnd(handler, widget);
+            if (widget.getLocalName().equals("merge")) {
+            	loadAndAddWidgets(((HasWidgets) widget).iterator(), root, handler, idKey, model);
+            	widgetCreated = root;
+            } else {
+            	widgetCreated = PluginInvoker.handlerStart(handler, widget, index);
+            	widgetCreated.setLoopParam(model);
+            	loadAndAddWidgets(((HasWidgets) widget).iterator(), root, handler, idKey, model);
+                PluginInvoker.handlerEnd(handler, widget);
+            }
         } else if (objWidget instanceof com.ashera.widget.BaseWidget.LazyBaseWidget) {
             com.ashera.widget.BaseWidget.LazyBaseWidget widget = (com.ashera.widget.BaseWidget.LazyBaseWidget) objWidget;
             widgetCreated = PluginInvoker.handlerStart(handler, widget, index);
@@ -1905,5 +1914,21 @@ public abstract class BaseWidget implements IWidget {
 		}
 		
 		return myfragment;
+	}
+
+
+	private Map<String, String> unresolvedAttributes;
+	@Override
+	public Map<String, String> getUnResolvedAttributes() {
+		return unresolvedAttributes;
+	}
+
+	@Override
+	public void addUnResolvedAttribute(String key, String value) {
+		if (unresolvedAttributes == null) {
+			unresolvedAttributes = new java.util.LinkedHashMap<>();
+		}
+		
+		unresolvedAttributes.put(key, value);
 	}
 }
