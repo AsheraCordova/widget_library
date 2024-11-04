@@ -1667,15 +1667,25 @@ public abstract class BaseWidget implements IWidget {
             return null;
         }
     }
+	
 	public static Object invokePrivateMethodUsingReflection(Object obj, String methodName,
             Object... params) {
         int paramCount = params.length;
-        Method method = null;
-        Object requiredObj = null;
         Class<?>[] classArray = new Class<?>[paramCount];
         for (int i = 0; i < paramCount; i++) {
             classArray[i] = params[i].getClass();
         }
+        
+        Object requiredObj = invokePrivateMethodUsingReflection(obj, methodName, classArray, params);
+
+        return requiredObj;
+    }
+
+	public static Object invokePrivateMethodUsingReflection(Object obj, String methodName, Class<?>[] classArray,
+			Object... params) {
+		Method method = null;
+        Object requiredObj = null;
+
         Class superClass = obj.getClass();
         try {
         	while(method == null && superClass != null) {
@@ -1692,9 +1702,8 @@ public abstract class BaseWidget implements IWidget {
         } catch (IllegalAccessException e) {
         } catch (InvocationTargetException e) {
         }
-
-        return requiredObj;
-    }
+		return requiredObj;
+	}
 	
 
 	@Override
