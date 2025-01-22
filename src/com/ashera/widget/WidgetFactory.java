@@ -221,4 +221,8 @@ public class WidgetFactory {
 		attributableMap.put(attributable.getLocalName(), attributable);
 		attributableForMap.get(localName).add(attributable);
 	}
+
+	public static java.util.Collection<WidgetAttribute> getAttributes(String localName) {
+		return attributeMap.get(localName).values();
+	}
 }
