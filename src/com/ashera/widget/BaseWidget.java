@@ -441,6 +441,24 @@ public abstract class BaseWidget implements IWidget {
 		return convertedValue;
 	}
 	
+	@Override
+	public Object quickConvertBack(Object objValue, String type) {
+		IConverter converter = PluginInvoker.getConverter(type);
+
+        if (objValue != null && PluginInvoker.isNull(objValue)) {
+        	objValue = null;
+        }
+        
+        Object convertedValue = objValue;
+
+        if (converter != null && objValue != null) {
+        	convertedValue = PluginInvoker.convertTo(converter, objValue, fragment);
+        }
+        
+		return convertedValue;
+	}
+
+	
 	
 	@Override
 	public Object quickConvert(Object objValue, String type, String arrayType, String finalArrayType) {
@@ -534,7 +552,7 @@ public abstract class BaseWidget implements IWidget {
             	}
             }
 
-            if (convertedValue != null) {
+            if (convertedValue != null || "nil".equals(type)) {
 	            ILifeCycleDecorator lifeCycleDecorator = getDecorator(widgetAttribute);
 	
 	            if (lifeCycleDecorator != null) {
@@ -1085,10 +1103,34 @@ public abstract class BaseWidget implements IWidget {
         if (!skipConvert) {
 			IConverter converter = PluginInvoker.getConverter(widgetAttribute.getAttributeType());
 			if (converter != null && objValue != null) {
+				objValue = handleArrayTypeForGet(objValue, widgetAttribute.getArrayType(), widgetAttribute.getArrayListToFinalType());
 				objValue = PluginInvoker.convertTo(converter, objValue, fragment);
 				
 			}
         }
+		return objValue;
+	}
+	
+	private Object handleArrayTypeForGet(Object objValue, String arrayType, String finalArrayType) {
+		if  (arrayType != null) {
+			if (finalArrayType != null && !(objValue instanceof List)) {
+				IConverter converter = PluginInvoker.getConverter(finalArrayType);
+				objValue = converter.convertTo(objValue, fragment);
+			}
+			
+			IConverter converter = PluginInvoker.getConverter(arrayType);
+			
+			
+			List<Object> values = (List<Object>) objValue;
+			String[] finalValues = new String[values.size()]; 
+			
+			for (int i = 0; i < values.size(); i++) {
+				Object value = values.get(i);
+				finalValues[i] = (String) converter.convertTo(value, fragment);
+			}
+			
+			objValue = finalValues;
+		}
 		return objValue;
 	}
 

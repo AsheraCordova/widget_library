@@ -140,4 +140,5 @@ public interface IWidget extends IModel, HasLifeCycleDecorators, IWrapableWidget
 	void setAnimator(Object animator);
 	void addUnResolvedAttribute(String key, String value);
 	Map<String, String> getUnResolvedAttributes();
+	Object quickConvertBack(Object objValue, String type);
 }
