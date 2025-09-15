@@ -950,11 +950,15 @@ public abstract class BaseWidget implements IWidget {
         for (Object pathObj : paths) {
             String path = PluginInvoker.getString(pathObj);
             
-            if (path.startsWith("@+id/")) {
+            if (path.equals("rootFragment")) {
+            	widget = fragment.getRootFragment().getRootWidget();
+            	pathWidgets.add(widget);
+            }
+            else if (path.startsWith("@+id/")) {
                 widget = widget.findWidgetById(path);
                 pathWidgets.add(widget);
             }
-            if (path.startsWith("@+pos/")) {
+            else if (path.startsWith("@+pos/")) {
                 if (widget instanceof HasWidgets) {
                     widget = ((HasWidgets) widget).get(PluginInvoker.getInt(path.substring("@+pos/".length())));
                     pathWidgets.add(widget);

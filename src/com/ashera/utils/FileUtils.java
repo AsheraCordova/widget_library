@@ -103,13 +103,24 @@ public class FileUtils {
 		return  fileData.toString();
 	}
 	
-	public static java.util.Properties loadPropertiesFromClassPath(String fileName) {
-		java.util.Properties properties = new java.util.Properties();
-		java.io.StringReader stringReader = null;
+	public static java.util.Properties loadPropertiesFromClassPath(String fileName) {		
 		try {
 			String fileContent = readFileToString(new InputStreamReader(getInputStreamFromClassPath(fileName)));
+			return loadProperties(fileContent);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static java.util.Properties loadProperties(String fileContent) {
+		java.io.StringReader stringReader = null;
+
+		try {
 			stringReader = new java.io.StringReader(fileContent);
+			java.util.Properties properties = new java.util.Properties();
 			properties.load(stringReader);
+
+			return properties;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -117,8 +128,6 @@ public class FileUtils {
 				stringReader.close();
 			}
 		}
-		
-		return properties;
 	}
 	
 	public static java.util.Properties getFileAsProperties(String fileName) {
@@ -189,4 +198,7 @@ public class FileUtils {
 		}
 	}
 
+	public static String getSlashAppendedDirectoryName(String directoryName) {
+		return directoryName.endsWith("/") ? directoryName : directoryName + "/";
+	}
 }

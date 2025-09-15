@@ -17,7 +17,7 @@ public interface IFragment {
 	void onDestroy();
 	void onResume();
 	void onPause();
-	void onCloseDialog();
+	void onCloseDialog(java.util.Map<String, String> eventData);
 	Object onCreateView(boolean measure);
 	IFragment getRootFragment();
 	
@@ -60,4 +60,6 @@ public interface IFragment {
 	void setInlineResource(String key, String value, boolean append);
 	IFragment getParent();
 	String getUId();
+	String getRootDirectory();
+	String getNamespace();
 }

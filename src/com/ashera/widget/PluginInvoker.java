@@ -202,6 +202,11 @@ public class PluginInvoker {
 		plugin.invoke("addToCurrentParent", handler,widget);
 	}
 
+	public static String xml2json(String xml,IFragment fragment) {
+		IPlugin plugin = PluginManager.get("htmlparser");
+		return (String)plugin.invoke("xml2json", xml,fragment);
+	}
+
 	//end - htmlparser
 
 	//start - core
@@ -328,6 +333,16 @@ public class PluginInvoker {
 	public static void enqueueTaskForEventLoop(Runnable runnable,long delay) {
 		IPlugin plugin = PluginManager.get("core");
 		plugin.invoke("enqueueTaskForEventLoop", runnable,delay);
+	}
+
+	public static String resolveCDVFileLocation(String cdvUrl,IFragment fragment) {
+		IPlugin plugin = PluginManager.get("core");
+		return (String)plugin.invoke("resolveCDVFileLocation", cdvUrl,fragment);
+	}
+
+	public static String readCdvDataAsString(String directoryName,String fileName,IFragment fragment) {
+		IPlugin plugin = PluginManager.get("core");
+		return (String)plugin.invoke("readCdvDataAsString", directoryName,fileName,fragment);
 	}
 
 	//end - core

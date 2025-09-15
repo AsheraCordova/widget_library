@@ -14,9 +14,18 @@ public class ModelStore {
             	break;
             case parentview:
             	IFragment currentFragment = widget.getFragment();
-            	while (currentFragment.getParent() != null) {
-            		currentFragment = currentFragment.getParent();
-				}
+            	if (currentFragment.getRootDirectory() == null) {
+	            	while (currentFragment.getParent() != null) {
+	            		currentFragment = currentFragment.getParent();
+					}
+            	} else {
+            		while (currentFragment.getParent() != null) {
+            			if (currentFragment.getParent().getRootDirectory() == null) {
+            				break;
+            			}
+	            		currentFragment = currentFragment.getParent();
+					}
+            	}
             	currentFragment.storeUserData(varName, objValue);
             break;
         	case session:        		
@@ -62,9 +71,18 @@ public class ModelStore {
 		        break;
 		    case parentview:
             	IFragment currentFragment = widget.getFragment();
-            	while (currentFragment.getParent() != null) {
-            		currentFragment = currentFragment.getParent();
-				}
+            	if (currentFragment.getRootDirectory() == null) {
+	            	while (currentFragment.getParent() != null) {
+	            		currentFragment = currentFragment.getParent();
+					}
+            	} else {
+            		while (currentFragment.getParent() != null) {
+            			if (currentFragment.getParent().getRootDirectory() == null) {
+            				break;
+            			}
+	            		currentFragment = currentFragment.getParent();
+					}
+            	}
             	
             	obj = currentFragment.getUserData(varName);
             	break;
