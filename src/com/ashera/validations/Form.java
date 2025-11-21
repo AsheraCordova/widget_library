@@ -1,3 +1,18 @@
+//start - license
+/*
+ * Copyright (c) 2025 Ashera Cordova
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ */
+//end - license
 /*
  * Copyright 2013 Philip Schiffer
  *
@@ -71,7 +86,7 @@ public class Form {
     }
 
 
-    /**
+   /**
      * check if all the fields in form is valid.
      * @return true or false
      */
@@ -105,7 +120,7 @@ public class Form {
         return result;
     }
 
-    /**
+   /**
      * method to reset all errors in form
      */
     public void resetErrors() {
@@ -126,7 +141,7 @@ public class Form {
     	
     	return formElementsMap;
     }
-    /**
+   /**
      * @param e Exception
      */
     protected void showErrorMessage(final FieldValidationException e) {

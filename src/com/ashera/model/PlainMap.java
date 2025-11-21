@@ -1,3 +1,18 @@
+//start - license
+/*
+ * Copyright (c) 2025 Ashera Cordova
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ */
+//end - license
 /*
  * Copyright 2015 Telefónica Investigación y Desarrollo, S.A.U
  *
@@ -41,19 +56,19 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
     private static final String DOT_ARRAY_LENGTH = ".length";
     private static final String EMPTY_STRING = "";
 
-    /**
+   /**
      * Hierarchical map of the document.
      */
     private Map<String, Object> documentMap;
 
-    /**
+   /**
      * Default constructor. Creates an empty map.
      */
     public PlainMap() {
         this.documentMap = new HashMap<String, Object>();
     }
 
-    /**
+   /**
      * Constructor.
      *
      * @param documentMap
@@ -62,7 +77,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         this.documentMap = documentMap;
     }
 
-    /**
+   /**
      * Constructor. The map is created under a root path.
      *
      * @param documentMap
@@ -73,7 +88,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         this.addRootPath(rootPath);
     }
 
-    /* (non-Javadoc)
+   /* (non-Javadoc)
 	 * @see com.ashera.model.IFlatMap#getHierarchicalMap()
 	 */
     @Override
@@ -81,7 +96,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         return this.documentMap;
     }
 
-    /* (non-Javadoc)
+   /* (non-Javadoc)
 	 * @see com.ashera.model.IFlatMap#getPlainMap()
 	 */
     @Override
@@ -89,7 +104,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         return new InternalPlainMap().getPlainMap(this.documentMap);
     }
 
-    /* (non-Javadoc)
+   /* (non-Javadoc)
 	 * @see com.ashera.model.IFlatMap#exists(java.lang.String)
 	 */
     @Override
@@ -129,7 +144,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         }
     }
 
-    /* (non-Javadoc)
+   /* (non-Javadoc)
 	 * @see com.ashera.model.IFlatMap#get(java.lang.String)
 	 */
     @Override
@@ -147,7 +162,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         }
     }
 
-    /* (non-Javadoc)
+   /* (non-Javadoc)
 	 * @see com.ashera.model.IFlatMap#put(java.lang.String, java.lang.Object)
 	 */
     @Override
@@ -159,7 +174,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         }
     }
 
-    /* (non-Javadoc)
+   /* (non-Javadoc)
 	 * @see com.ashera.model.IFlatMap#clear()
 	 */
     @Override
@@ -167,7 +182,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         this.documentMap.clear();
     }
 
-    /* (non-Javadoc)
+   /* (non-Javadoc)
 	 * @see com.ashera.model.IFlatMap#remove(java.lang.String)
 	 */
     @Override
@@ -233,7 +248,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         }
     }
 
-    /* (non-Javadoc)
+   /* (non-Javadoc)
 	 * @see com.ashera.model.IFlatMap#addRootPath(java.lang.String)
 	 */
     @Override
@@ -248,7 +263,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         this.documentMap = newDocumentMap;
     }
 
-    /* (non-Javadoc)
+   /* (non-Javadoc)
 	 * @see com.ashera.model.IFlatMap#removeRootPath(java.lang.String)
 	 */
     @Override
@@ -262,7 +277,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         }
     }
 
-    /* (non-Javadoc)
+   /* (non-Javadoc)
 	 * @see com.ashera.model.IFlatMap#getParent()
 	 */
     @Override
@@ -273,7 +288,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         return this.documentMap.keySet().iterator().next();
     }
 
-    /* (non-Javadoc)
+   /* (non-Javadoc)
 	 * @see com.ashera.model.IFlatMap#extractParent()
 	 */
     @Override
@@ -286,7 +301,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         return parent;
     }
 
-    /**
+   /**
      * Get the element value for a specific path by querying the elementObject (typically a Map<String, Object>, but it
      * could also be a List<Object> or a String).
      *
@@ -328,7 +343,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         }
     }
 
-    /**
+   /**
      * Process a path (without any special bracket separator). The only separator permitted in this method is the "dot".
      * It iterates through the path elements by querying sequentially the maps.
      *
@@ -362,7 +377,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         }
     }
 
-    /**
+   /**
      * Process the path for an associative array. The path starts with the format: {key=value}.xxx. This notation is a
      * shortcut to handle lists of maps where it is required to query the map that matches a specific value. This method
      * returns the map that matches the value.
@@ -396,7 +411,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         return null;
     }
 
-    /**
+   /**
      * Process an array index returning the array element value. The parameter "arrayPath" is a string with the array
      * index and the rest of the path (e.g. "[3]", "[0].element", or "[0][2].element").
      *
@@ -428,7 +443,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         }
     }
 
-    /**
+   /**
      * Put a value in the map for the corresponding plain path. It iterates through the elements of the path, and it
      * adds any Map or List required to arrive to the path. The array elements are handled by prepareArrayElement.
      *
@@ -484,7 +499,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         }
     }
 
-    /**
+   /**
      * Iterates through the array indexes to generate/get the lists. The parameter "arrayPath" is a string with the
      * array indexes (e.g. "[3]" or "[0][2]"). If the parameter "value" is not null, when arriving to the last array
      * index, the value is set in that list.
@@ -538,7 +553,7 @@ public class PlainMap implements java.io.Serializable, IFlatMap{
         }
     }
 
-    /**
+   /**
      * Internal class to create a plain map which maps a hierarchical map.
      *
      * This class is used by the method getPlainMap.
