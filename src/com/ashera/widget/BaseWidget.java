@@ -869,6 +869,9 @@ public abstract class BaseWidget implements IWidget {
 
 	protected boolean checkIfAttributeMatches(WidgetAttributeValue attribute) {
 		String orientation = PluginInvoker.getOrientation();
+		if (getFromTempCache("currentOrientation") != null) {
+			orientation = (String) getFromTempCache("currentOrientation");
+		}
 		int screenWidth = PluginInvoker.getScreenWidth();
 		int screenHeight = PluginInvoker.getScreenHeight();
 		boolean orientationCheck = attribute.getOrientation().equals("default") || attribute.getOrientation().equals(orientation);
