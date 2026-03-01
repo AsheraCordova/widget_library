@@ -64,6 +64,9 @@ public class AttributeCommandChain {
 							command.updatePhaseArgs(args);
 						}
 						finalValue = command.modifyValue(widget, nativeWidget, phase, attributeName, finalValue);
+						if (command.isStopExecution()) {
+							break;
+						}
 					}
 				}
 			}

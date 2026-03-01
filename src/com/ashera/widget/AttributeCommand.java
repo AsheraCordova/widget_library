@@ -25,4 +25,5 @@ public interface AttributeCommand {
 	boolean executeAfterPostMeasure();
 	Object getValue(String attributeName);
 	String getId();
+	boolean isStopExecution();
 }

@@ -19,6 +19,7 @@ public abstract class BaseAttributeCommand implements AttributeCommand {
 	protected int priority;
 	protected String phase;
 	protected String id;
+	private boolean stopExecution;
 
 	public BaseAttributeCommand(String id) {
 		super();
@@ -54,4 +55,12 @@ public abstract class BaseAttributeCommand implements AttributeCommand {
 		return id;
 	}
 
+	@Override
+	public boolean isStopExecution() {
+		return stopExecution;
+	}
+
+	public void setStopExecution(boolean stopExecution) {
+		this.stopExecution = stopExecution;
+	}
 }
