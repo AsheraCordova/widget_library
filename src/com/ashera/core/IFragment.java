@@ -16,6 +16,7 @@
 package com.ashera.core;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ashera.css.StyleSheet;
 import com.ashera.widget.IWidget;
@@ -28,7 +29,7 @@ public interface IFragment {
 	// lifecycle methods
 	void onAttach(IActivity activity);
 	void onDetach();
-	void onCreate();
+	void onCreate(Object... args);
 	void onDestroy();
 	void onResume();
 	void onPause();
@@ -77,4 +78,5 @@ public interface IFragment {
 	String getUId();
 	String getRootDirectory();
 	String getNamespace();
+	void sendEvent(String action, Map<String, String> extraData);
 }
