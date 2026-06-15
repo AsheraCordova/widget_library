@@ -1420,10 +1420,12 @@ public abstract class BaseWidget implements IWidget {
 			    String idPath = getModelIdPath();
 			    if (idPath != null) {
 			    	Object myobj = getModelByPath(idPath, obj);
-			    	if (methodName != null) {
-			    		myobj = ExpressionMethodHandler.getValue(methodName, myobj, this);
-					}
-					PluginInvoker.putJSONSafeObjectIntoMap(eventMap, idPath, myobj);
+			    	if (myobj != null) {
+				    	if (methodName != null) {
+				    		myobj = ExpressionMethodHandler.getValue(methodName, myobj, this);
+						}
+						PluginInvoker.putJSONSafeObjectIntoMap(eventMap, idPath, myobj);
+			    	}
 			    }
 			    if (methodName != null) {
 			    	obj = ExpressionMethodHandler.getValue(methodName, obj, this);
@@ -1489,7 +1491,11 @@ public abstract class BaseWidget implements IWidget {
             	obj = new com.ashera.model.PlainMap(PluginInvoker.getMap(obj)).get(varPath);
             } else {
             	if (obj != null) { 
-            		obj = PluginInvoker.getMap(obj).get(varPath);
+            		Map<String, Object> map = PluginInvoker.getMap(obj);
+            		if (map == null) {
+            			return null;
+            		}
+					obj = map.get(varPath);
             	}
             }
 		}

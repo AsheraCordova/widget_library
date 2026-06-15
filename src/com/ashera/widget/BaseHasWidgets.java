@@ -707,4 +707,42 @@ public abstract class BaseHasWidgets extends BaseWidget implements HasWidgets{
 			}
 		}
 	}
+	
+	public void swapModelByIndex(int fromIndex, int toIndex) {
+		if (fromIndex == toIndex) {
+			return;
+		}
+
+		Object fromModel = getModelAtIndex(fromIndex);
+		Object toModel = getModelAtIndex(toIndex);
+
+		// Remove higher index first to avoid index shifting
+		if (fromIndex > toIndex) {
+			removeModelAtIndex(fromIndex);
+			removeModelAtIndex(toIndex);
+
+			addModel(fromModel, toIndex);
+			addModel(toModel, fromIndex);
+		} else {
+			removeModelAtIndex(toIndex);
+			removeModelAtIndex(fromIndex);
+
+			addModel(toModel, fromIndex);
+			addModel(fromModel, toIndex);
+		}
+	}
+
+	public Object getModelAtIndex(int index) {
+		if (index != -1) {
+			String modelFor = getModelFor();
+			if (modelFor != null) {
+				ModelExpressionParser.ModelLoopHolder modelLoopHolder = com.ashera.model.ModelExpressionParser.parseModelLoopExpression(modelFor);
+				List<Object> listObj = getListObjectInScope(modelLoopHolder);
+				return listObj.get(index);
+			}
+		}
+
+		return null;
+	}
+
 }
