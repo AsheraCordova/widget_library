@@ -29,6 +29,8 @@ public interface IActivity {
 	Object getFromTempCache(String varName);
 	Object getRootWidget();
 	float getScaleFactor();
+	void addBackPressCallBack(Runnable callBack);
+	void removeBackPressCallBack(Runnable callBack);
 	String getPreference(String name);
 
 }
