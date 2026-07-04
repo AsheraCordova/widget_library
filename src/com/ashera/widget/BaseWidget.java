@@ -1867,14 +1867,14 @@ public abstract class BaseWidget implements IWidget {
 	
 	@Override
     public IWidget loadLazyWidgets(HasWidgets parent, int index, String idKey, LoopParam model) {
-        Object handler = PluginInvoker.getHandler(parent, index, fragment);
+        Object handler = PluginInvoker.getHandler(parent, index, parent.getFragment());
         return loadWidget(this, parent, handler, idKey, model, index);
     }
 
 	
 	@Override
     public IWidget loadLazyWidgets(HasWidgets parent) {
-        Object handler = PluginInvoker.getHandler(parent, -1, fragment);
+        Object handler = PluginInvoker.getHandler(parent, -1, parent.getFragment());
         return loadWidget(this, parent, handler, "", null, -1);
     }
 	
