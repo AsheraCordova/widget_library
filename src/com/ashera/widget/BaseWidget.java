@@ -1346,7 +1346,11 @@ public abstract class BaseWidget implements IWidget {
 			}
 			
 			WidgetAttribute widgetAttribute = getAttribute(this.getParent(), this.getLocalName(), modelAttribute);
-    		applyStyleToWidget(widgetAttribute, obj);
+			if (widgetAttribute.getAttributeName().startsWith("layout_")) {
+				((BaseHasWidgets) getParent()).setChildAttribute(this, widgetAttribute, obj, !(obj instanceof String));
+			} else {
+				applyStyleToWidget(widgetAttribute, obj);
+			}
     		requestLayoutNInvalidateIfRequired(widgetAttribute.getUpdateUiFlag());
 	    }
 	}
